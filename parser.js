@@ -25,23 +25,28 @@ function addCourseByDay(day, data) {
     });
 }
 
-// 这里没有考虑非连续周的情况，因为我还没见过非连续周在课程表里怎么写。
+// 涵盖“第9周”“9-15周”“9-15双周”“9-15单周”“1-7,9-15周”的解析。拿采卓19-1班 2020-2021学年第二学期课程表测试。
 function parseWeeksStr(weeksStr) {
     console.log('parseWeeksStr 被调用：' + weeksStr);
     let final = [];
-    weeksStr = weeksStr.replace('周', '').replace('节', '');
-    if (weeksStr.indexOf('-') !== -1) {
-        let weeksStrAry = weeksStr.split('-');
-        let begin = Number(weeksStrAry[0]);
-        let end = Number(weeksStrAry[1]);
-        if (begin > 0 && end > begin) {
-            for (let i = begin; i <= end; i++) {
-                final.push(i);
+    let weeksSplAry = weeksStr.split(',');
+    for (let item of weeksSplAry) {
+        let weeksStrTmp = item.replace('第', '').replace('周', '').replace('节', '');
+        if (weeksStrTmp.indexOf('-') !== -1) {
+            let weeksStrAry = weeksStrTmp.split('-'); // 以 - 为分隔符。
+            let begin = Number(weeksStrAry[0]);
+            let end = Number(weeksStrAry[1].replace('单周', '').replace('双周', ''));
+            if (begin > 0 && end > begin) {
+                for (let i = begin; i <= end; i++) {
+                    if ((weeksStrAry[1].indexOf('单周') !== -1 && i % 2 === 0) || (weeksStrAry[1].indexOf('双周') !== -1 && i % 2 !== 0)) // 课程单周上但是当前循环在双周或课程双周上但是当前循环在单周。
+                        continue;
+                    final.push(i);
+                }
             }
         }
-    }
-    else {
-        final.push(Number(weeksStr));
+        else {
+            final.push(Number(weeksStrTmp));
+        }
     }
     return final;
 }
@@ -56,15 +61,17 @@ function unique(arr) {
 }
 
 function scheduleHtmlParser(html) {
+    let posReg = /(科?[WE]?[NS]?[0-9]{3,4}(（高层）)?)|(操场\d+)/;
     let courses = $('.class_div');
     courses.each(function (key, course) {
+        console.log('正在解析：', course);
         let day = Number($(course).parent().attr('id').charAt(0));
         let data = {};
-        data.name = $($(course).children()[0]).text();
-        data.teacher = $($(course).children()[1]).text();
+        data.name = $($(course).children()[0]).text().split('_')[0]; // 去除无用且占空间的内容。
+        data.teacher = $($(course).children()[1]).text().replace(' ', '').replace(' ', ''); // 有时候老师名字里有俩空格，占空间。
         data.weeksStr = $($(course).children()[2]).text();
         data.sectionsStr = $($(course).children()[3]).text();
-        data.position = $($(course).children()[4]).text();
+        data.position = posReg.test($($(course).children()[4]).text()) ? posReg.exec($($(course).children()[4]).text())[0] : $($(course).children()[4]).text(); // 尽可能精简位置信息，避免占用过多空间。
         addCourseByDay(day, data);
     });
     return schedule;
