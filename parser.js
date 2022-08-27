@@ -53,6 +53,7 @@ function scheduleHtmlParser(html) {
         return final;
     }
     function parseSectionsStr(sectionsStr) {
+        console.log('parseSectionsStr 被调用：' + sectionsStr);
         return parseWeeksStr(sectionsStr);
     }
     // 数组去重
