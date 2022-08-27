@@ -15,7 +15,7 @@ async function scheduleHtmlProvider() {
     const myCourseTableDiv = document.getElementById('mycoursetable');
     if (myCourseTableDiv.childNodes.length === 0) {
         await AIScheduleAlert('无法找到当前课程表，请在查询后点击“查看”按钮。另外，这个提示框可能会把页面搞乱，但是为了保证兼容不得不用，定向至其他页面恢复正常。');
-        return 'do not continue'
+        return 'do not continue';
     }
     const tmpNode = document.createElement('div');
     const printDiv = document.getElementById('print_div');

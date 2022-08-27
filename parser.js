@@ -4,19 +4,20 @@ function scheduleHtmlParser(html) {
     const schedule = [];
     function addCourseByDay(day, data) {
         console.log('addCourse 被调用：', day, data);
-        for (const item of schedule) {
+        for (let item of schedule) {
             /*
+                课程表中已有当前课程
                 这里认为：day、name、teacher、position 相同的课程为一门课程
                 实际上，如果不采用解析 HTML 的方式而是解析 API 返回数据的话，就可以更精确
             */
             if (item.day === day && item.name === data.name && item.teacher === data.teacher && item.position === data.position) {
-                let tmp = item;
-                tmp.weeks = unique(tmp.weeks.concat(parseWeeksStr(data.weeksStr)));
-                tmp.sections = unique(tmp.sections.concat(parseSectionsStr(data.sectionsStr)));
-                schedule[schedule.indexOf(item)] = tmp;
+                item.weeks = unique(item.weeks.concat(parseWeeksStr(data.weeksStr)));
+                item.sections = unique(item.sections.concat(parseSectionsStr(data.sectionsStr)));
+                schedule[schedule.indexOf(item)] = item;
                 return;
             }
         }
+        // 课程表中没有当前课程
         schedule.push({
             name: data.name,
             position: data.position,
@@ -71,7 +72,8 @@ function scheduleHtmlParser(html) {
         data.teacher = $($(course).children()[1]).text().replace(' ', '').replace(' ', ''); // 有时候老师名字里有俩空格，占空间
         data.weeksStr = $($(course).children()[2]).text();
         data.sectionsStr = $($(course).children()[3]).text();
-        data.position = posReg.test($($(course).children()[4]).text()) ? posReg.exec($($(course).children()[4]).text())[0] : $($(course).children()[4]).text(); // 尽可能精简位置信息，避免占用过多空间
+        const posTmp = $($(course).children()[4]).text();
+        data.position = posReg.test(posTmp) ? posReg.exec(posTmp)[0] : posTmp; // 尽可能精简位置信息，避免占用过多空间
         addCourseByDay(day, data);
     });
     return schedule;
