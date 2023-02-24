@@ -166,7 +166,7 @@ async function scheduleTimer({ providerRes, parserRes } = {}) {
     }
     const userSelect = await AIScheduleSelect({
         titleText: '选择教学作息时间',
-        contentText: `学校的教学作息时间比较灵活，受接口限制无法具体到每节课设置，只能统一设置，选择最接近的即可。\n\n${table}`,
+        contentText: `学校的教学作息时间比较灵活，受接口限制无法具体到每节课设置，只能统一设置，选择最接近的即可。\n${table}`,
         selectList: [
             '教学主楼',
             '科技大厦' //,
