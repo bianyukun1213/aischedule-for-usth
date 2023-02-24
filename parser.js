@@ -1,6 +1,6 @@
 // 所有代码最后一行不要加分号；自己抽离的函数放在小爱课程表提供的函数内，见 https://open-schedule-prod.ai.xiaomi.com/docs/#/help/?id=%e4%bb%a3%e7%a0%81%e4%bb%8b%e7%bb%8d
 
-function scheduleHtmlParser(html) {
+function scheduleHtmlParser(providerData) {
     const schedule = [];
     function addCourseByDay(day, data) {
         console.log('addCourse 被调用：', day, data);
@@ -55,26 +55,51 @@ function scheduleHtmlParser(html) {
     }
     function parseSectionsStr(sectionsStr) {
         console.log('parseSectionsStr 被调用：' + sectionsStr);
-        return parseWeeksStr(sectionsStr);
+        // JSON 版的数据是单个数字，比如 5-6 节为 5，需要和 6 组成一个数组；如果是 HTML 版，即不是数字是字符串，就送去解析
+        return isNaN(sectionsStr) ? parseWeeksStr(sectionsStr) : [sectionsStr, sectionsStr + 1];
     }
     // 数组去重
     function unique(arr) {
         return Array.from(new Set(arr));
     }
     // 以下是 HTML 解析代码
-    const posReg = /(科?[WE]?[NS]?[0-9]{3,4}(（高层）)?)|(操场\d+)/;
-    const courses = $('.class_div');
-    courses.each((key, course) => {
-        console.log('正在解析：', course);
-        const day = Number($(course).parent().attr('id').charAt(0));
-        const data = {};
-        data.name = $($(course).children()[0]).text().split('_')[0]; // 去除无用且占空间的内容
-        data.teacher = $($(course).children()[1]).text().replace(' ', '').replace(' ', ''); // 有时候老师名字里有俩空格，占空间
-        data.weeksStr = $($(course).children()[2]).text();
-        data.sectionsStr = $($(course).children()[3]).text();
-        const posTmp = $($(course).children()[4]).text();
-        data.position = posReg.test(posTmp) ? posReg.exec(posTmp)[0] : posTmp; // 尽可能精简位置信息，避免占用过多空间
-        addCourseByDay(day, data);
-    });
+    function processHTML(html) {
+        const posReg = /(科?[WE]?[NS]?[0-9]{3,4}(（高层）)?)|(操场\d+)/;
+        const courses = $('.class_div');
+        courses.each((key, course) => {
+            console.log('正在解析（HTML）：', course);
+            const day = Number($(course).parent().attr('id').charAt(0)); // 一周里的第几天
+            const data = {};
+            data.name = $($(course).children()[0]).text().split('_')[0]; // 课程名，去除无用且占空间的内容
+            data.teacher = $($(course).children()[1]).text().replace(' ', '').replace(' ', ''); // 教师名，有时候老师名字里有俩空格，占空间
+            data.weeksStr = $($(course).children()[2]).text(); // 第几周
+            data.sectionsStr = $($(course).children()[3]).text(); // 第几节
+            const posTmp = $($(course).children()[4]).text(); // 位置
+            data.position = posReg.test(posTmp) ? posReg.exec(posTmp)[0] : posTmp; // 尽可能精简位置信息，避免占用过多空间
+            addCourseByDay(day, data);
+        });
+    }
+    // 以下是 JSON 解析代码
+    function processJSON(jsonStr) {
+        const posReg = /(科?[WE]?[NS]?[0-9]{3,4}(（高层）)?)|(操场\d+)/;
+        const courses = JSON.parse(jsonStr)[0];
+        for (const course of courses) {
+            console.log('正在解析（JSON）：', course);
+            const day = course.id.skxq; // 一周里的第几天，skxq 代表“授课星期”吧
+            const data = {};
+            data.name = course.kcm.split('_')[0]; // kcm，课程名，去除无用且占空间的内容
+            data.teacher = course.jsm.replace(' ', '').replace(' ', ''); // jsm，教师名，有时候老师名字里有俩空格，占空间
+            data.weeksStr = course.zcsm; // 第几周
+            data.sectionsStr = course.id.skjc; // 第几节，JSON 版的数据是单个数字，所以其实不是“Str”
+            const posTmp = course.jasm; // 位置
+            data.position = posReg.test(posTmp) ? posReg.exec(posTmp)[0] : posTmp; // 尽可能精简位置信息，避免占用过多空间
+            addCourseByDay(day, data);
+        }
+    }
+    if (providerData.startsWith('HTML|')) {
+        processHTML(providerData.substring(5));
+    } else if (providerData.startsWith('JSON|')) {
+        processJSON(providerData.substring(5));
+    }
     return schedule;
 }

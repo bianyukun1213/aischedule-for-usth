@@ -4,21 +4,87 @@ async function scheduleHtmlProvider() {
     await loadTool('AIScheduleTools');
     const pageUrl = window.location.href;
     if (pageUrl.indexOf('student/teachingResources/classCurriculum/index') == -1) {
-        await AIScheduleAlert('学校的课程表比较特殊，请定向至“首页>教学资源>教学资源>班级课表”页面。另外，这个提示框可能会把页面搞乱，但是为了保证兼容不得不用，定向至其他页面恢复正常。');
+        await AIScheduleAlert('请定向至“首页>教学资源>教学资源>班级课表”页面。');
         return 'do not continue';
     }
-    /*
-        检查 mycoursetable 子节点个数，判断是否可获取课程表
-        这个方法不一定可靠，也许 mycoursetable 中没有课程，但在 other-course 里有额外课程
-        我所在的班级在 other-course 里没有额外课程，所以无法测试
-    */
-    const myCourseTableDiv = document.getElementById('mycoursetable');
-    if (myCourseTableDiv.childNodes.length === 0) {
-        await AIScheduleAlert('无法找到当前课程表，请在查询后点击“查看”按钮。另外，这个提示框可能会把页面搞乱，但是为了保证兼容不得不用，定向至其他页面恢复正常。');
+    const solutionSelect = await AIScheduleSelect({
+        titleText: '选择解析方案',
+        contentText: '新学期刚开始时，课程表通常还没有正式公布，你可能找不到新学期的课程表。如果是这种情况，请选择 2 号方案以尝试从接口导入课程表。正常情况请选择 1 号方案。',
+        selectList: [
+            '1. 页面 HTML',
+            '2. 接口 JSON',
+            '取消'
+        ]
+    });
+    if (solutionSelect === '1. 页面 HTML') {
+        /*
+            检查 mycoursetable 子节点个数，判断是否可获取课程表
+            这个方法不一定可靠，也许 mycoursetable 中没有课程，但在 other-course 里有额外课程
+            我所在的班级在 other-course 里没有额外课程，所以无法测试
+        */
+        const myCourseTableDiv = document.getElementById('mycoursetable');
+        if (myCourseTableDiv.childNodes.length === 0) {
+            await AIScheduleAlert('无法找到当前课程表，请在查询后点击“查看”按钮。');
+            return 'do not continue';
+        }
+        const tmpNode = document.createElement('div');
+        const printDiv = document.getElementById('print_div');
+        tmpNode.appendChild(printDiv.cloneNode(true));
+        return 'HTML|' + tmpNode.innerHTML;
+    } else if (solutionSelect === '2. 接口 JSON') {
+        const classNumEle = document.getElementById('classNum');
+        const classIndex = classNumEle.selectedIndex;
+        const className = classNumEle.options[classIndex].text;
+        console.log(`选择班级：${className}`);
+        if (className === '全部') {
+            await AIScheduleAlert('请选择你的班级。');
+            return 'do not continue';
+        }
+        const tBodyEle = document.getElementById('Bjkbtbody');
+        let classNum;
+        if (tBodyEle.rows.length < 1) {
+            await AIScheduleAlert('没有查找到班级号，请先点击“查询”按钮以查询你所在班级的课程表。');
+            return 'do not continue';
+        } else {
+            const firstClassName = tBodyEle.rows[0].cells[3].innerHTML;
+            if (firstClassName !== className) {
+                await AIScheduleAlert('首行班级不匹配，请先点击“查询”按钮以查询你所在班级的课程表。');
+                return 'do not continue';
+            } else {
+                classNum = tBodyEle.rows[0].cells[2].innerHTML;
+                console.log(`班级号：${classNum}`);
+            }
+        }
+        let planCode = await AISchedulePrompt({
+            titleText: '输入学年学期',
+            tipText: '2022-2023-1 代表 2022-2023 学年第一学期，2022-2023-2 代表 2022-2023 学年第二学期，以此类推。错误的输入可能导致查询不到数据。',
+            defaultText: '',
+            validator: value => {
+                let valid = /^20[0-9][0-9]-20[0-9][0-9]-[1,2]$/.test(value);
+                if (valid) {
+                    const firstYear = value.split('-')[0];
+                    const secondYear = value.split('-')[1];
+                    valid = (secondYear - firstYear == 1) ? true : false;
+                }
+                if (!valid) {
+                    return '输入无效。';
+                }
+                return false;
+            }
+        });
+        planCode += '-1';
+        console.log(`学年学期：${planCode}`);
+        try {
+            const res = await fetch(`http://${window.location.host}/student/teachingResources/classCurriculum/searchCurriculumInfo/callback?planCode=${planCode}&classCode=${classNum}`);
+            const jsonData = await res.json();
+            console.log('获取到接口数据：', jsonData);
+            return 'JSON|' + JSON.stringify(jsonData);
+        } catch (error) {
+            console.error('接口数据请求错误：', error.message);
+            await AIScheduleAlert(`接口数据请求错误：${error.message}`);
+            return 'do not continue';
+        }
+    } else {
         return 'do not continue';
     }
-    const tmpNode = document.createElement('div');
-    const printDiv = document.getElementById('print_div');
-    tmpNode.appendChild(printDiv.cloneNode(true));
-    return tmpNode.innerHTML;
 }

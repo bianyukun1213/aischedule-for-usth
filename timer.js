@@ -3,6 +3,7 @@
 async function scheduleTimer({ providerRes, parserRes } = {}) {
     await loadTool('AIScheduleTools');
     // A 版本：教学主楼，B 版本：科技大厦，C 版本：科技大厦（大一）
+    // 2023/2/24 更新：没有 C 版本了，但先不删，把选项去掉即可
     const sections = {
         versionA: [{
             section: 1,
@@ -157,11 +158,11 @@ async function scheduleTimer({ providerRes, parserRes } = {}) {
     };
     const userSelect = await AIScheduleSelect({
         titleText: '选择教学作息时间',
-        contentText: '学校的教学作息时间比较灵活，受接口限制无法具体到每节课设置，只能统一设置，选择最接近的即可。另外，这个选择框可能会把页面搞乱，但是为了保证兼容不得不用，反正到这步了也不影响。',
+        contentText: '学校的教学作息时间比较灵活，受接口限制无法具体到每节课设置，只能统一设置，选择最接近的即可。',
         selectList: [
             '教学主楼',
-            '科技大厦',
-            '科技大厦（大一）'
+            '科技大厦' //,
+            // '科技大厦（大一）' 现在没有 C 版本了
         ]
     });
     let currentSections = {};
