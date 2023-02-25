@@ -1,10 +1,10 @@
 # 黑龙江科技大学小爱课程表导入方案
 
-`GitHub` 仓库：[https://github.com/bianyukun1213/ai-schedule-for-usth](https://github.com/bianyukun1213/ai-schedule-for-usth)
+GitHub 仓库：[https://github.com/bianyukun1213/ai-schedule-for-usth](https://github.com/bianyukun1213/ai-schedule-for-usth)
 
-`Gitee` 仓库：[https://gitee.com/bianyukun1213/ai-schedule-for-usth](https://gitee.com/bianyukun1213/ai-schedule-for-usth)
+Gitee 仓库：[https://gitee.com/bianyukun1213/ai-schedule-for-usth](https://gitee.com/bianyukun1213/ai-schedule-for-usth)
 
-> `Gitee` 仓库仅用于镜像以及帮助文档的国内访问，如需提交 `Issue`、`Pull Request` 等，请使用 `GitHub` 仓库。
+> Gitee 仓库仅用于镜像以及帮助文档的国内访问，如需提交 `Issue`、`Pull Request` 等，请使用 GitHub 仓库。
 
 ## 帮助文档
 
@@ -28,7 +28,7 @@
 
 &emsp;&emsp;在这种方案中，教务系统的 `学年学期` 选项选择哪个都无所谓（因为我们要用自己的参数覆盖它），只要能筛选出你所在班级的课程表即可。
 
-&emsp;&emsp;筛选出你所在班级的课程表后，点击 `一键导入` 按钮，选择 `2. 解析接口 JSON` 并确认，输入 `学年学期`——格式是 `年份-年份-学期`，其中 `学期` 使用数字表示，`1` 代表第一学期，`2` 代表第二学期，例如 `2022-2023-2` 代表 `2022-2023 学年第二学期`——确认后稍加等待（此时方案在调用接口请求 `JSON` 数据），最后选择 `教学作息时间` 并确认。
+&emsp;&emsp;筛选出你所在班级的课程表后，点击 `一键导入` 按钮，选择 `2. 解析接口 JSON` 并确认，输入 `学年学期`——格式是 `年份-年份-学期`，其中 `学期` 使用数字表示，`1` 代表第一学期，`2` 代表第二学期，例如 `2022-2023-2` 代表 `2022-2023 学年第二学期`——确认后稍加等待（此时方案在调用接口请求 JSON 数据），最后选择 `教学作息时间` 并确认。
 
 ---
 
