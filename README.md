@@ -1,5 +1,11 @@
 # 黑龙江科技大学小爱课程表导入方案（ai-schedule-for-usth）
 
+`GitHub` 仓库：[https://github.com/bianyukun1213/ai-schedule-for-usth](https://github.com/bianyukun1213/ai-schedule-for-usth)
+
+`Gitee` 仓库：[https://gitee.com/bianyukun1213/ai-schedule-for-usth](https://gitee.com/bianyukun1213/ai-schedule-for-usth)
+
+> `Gitee` 仓库仅用于镜像以及帮助文档的国内访问，如需提交 `Issue`、`Pull Request` 等，请使用 `GitHub` 仓库。
+
 ## 帮助文档
 
 > 如有无法解决的问题，请联系 bianyukun1213@outlook.com。
