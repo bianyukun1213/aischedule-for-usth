@@ -9,7 +9,7 @@ async function scheduleHtmlProvider() {
     }
     const solutionSelect = await AIScheduleSelect({
         titleText: '选择解析方案',
-        contentText: '新学期刚开始时，课程表通常还没有正式公布，你可能找不到新学期的课程表。如果是这种情况，请选择 2 号方案以尝试从接口导入课程表。正常情况请选择 1 号方案。',
+        contentText: '新学期刚开始时，课程表通常还没有正式发布，你可能找不到新学期的课程表。如果是这种情况，请选择 2 号方案以尝试从接口导入课程表。正常情况请选择 1 号方案。',
         selectList: [
             '1. 解析页面 HTML',
             '2. 解析接口 JSON',
@@ -40,10 +40,10 @@ async function scheduleHtmlProvider() {
             await AIScheduleAlert('请选择你的班级。');
             return 'do not continue';
         }
-        const tBodyEle = document.getElementById('Bjkbtbody');
+        const tBodyEle = document.getElementById('Bjkbtbody'); // 班级课表 tBody
         let classNum = -1;
         if (tBodyEle.rows.length < 1) {
-            await AIScheduleAlert('没有查找到班级号，请先点击“查询”按钮以查询你所在班级的课程表。');
+            await AIScheduleAlert('无法找到班级号，请先点击“查询”按钮以查询你所在班级的课程表。如果你是新生且确认操作无误，请等待课程表正式发布。');
             return 'do not continue';
         } else {
             const firstClassName = tBodyEle.rows[0].cells[3].innerHTML;
@@ -57,7 +57,7 @@ async function scheduleHtmlProvider() {
         }
         let planCode = await AISchedulePrompt({
             titleText: '输入学年学期',
-            tipText: '2022-2023-1 代表 2022-2023 学年第一学期，2022-2023-2 代表 2022-2023 学年第二学期，以此类推。错误的输入可能导致查询不到数据。',
+            tipText: '2022-2023-1 代表 2022-2023 学年第一学期，2022-2023-2 代表 2022-2023 学年第二学期，以此类推。输入错误学年或对应课程表还没有编排时可能查询不到数据导致导入失败。',
             defaultText: '',
             validator: value => {
                 let valid = /^20[0-9][0-9]-20[0-9][0-9]-[1,2]$/.test(value);
@@ -69,7 +69,7 @@ async function scheduleHtmlProvider() {
                 if (!valid) {
                     return '输入无效。';
                 }
-                return false;
+                return false; // 返回 false 表示输入有效
             }
         });
         planCode += '-1';
@@ -77,7 +77,7 @@ async function scheduleHtmlProvider() {
         try {
             const res = await fetch(`http://${window.location.host}/student/teachingResources/classCurriculum/searchCurriculumInfo/callback?planCode=${planCode}&classCode=${classNum}`);
             const jsonData = await res.json();
-            console.log('获取到接口数据：', jsonData);
+            console.log('请求到接口数据：', jsonData);
             return 'JSON|' + JSON.stringify(jsonData);
         } catch (error) {
             console.error('接口数据请求错误：', error.message);

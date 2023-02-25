@@ -9,6 +9,7 @@ function scheduleHtmlParser(providerData) {
                 课程表中已有当前课程
                 这里认为：day、name、teacher、position 相同的课程为一门课程
                 实际上，如果不采用解析 HTML 的方式而是解析 API 返回数据的话，就可以更精确
+                2023/2/25：API 的数据实际上和 HTML 里的一模一样
             */
             if (item.day === day && item.name === data.name && item.teacher === data.teacher && item.position === data.position) {
                 item.weeks = unique(item.weeks.concat(parseWeeksStr(data.weeksStr)));
@@ -63,8 +64,11 @@ function scheduleHtmlParser(providerData) {
         return Array.from(new Set(arr));
     }
     // 以下是 HTML 解析代码
-    function processHTML(html) {
+    function processHTML(html) { // 这里的参数应该是不能删
         const posReg = /(科?[WE]?[NS]?[0-9]{3,4}(（高层）)?)|(操场\d+)/;
+        // 似乎在小爱课程表的服务端，在 scheduleHtmlParser 函数的开始，$ 会自动加载 scheduleHtmlParser 函数的参数，也就是本方案中的 providerData（以前五个字符标识数据格式）
+        // 但本方案又需要支持 JSON 数据，我想让 $ 加载纯净的 HTML 而不带“HTML|”标识符，所以又定义了一个函数内部的 $，原来的那个不用
+        const $ = cheerio.load(html);
         const courses = $('.class_div');
         courses.each((key, course) => {
             console.log('正在解析（HTML）：', course);
