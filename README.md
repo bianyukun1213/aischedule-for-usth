@@ -4,7 +4,7 @@ GitHub 仓库：[https://github.com/bianyukun1213/ai-schedule-for-usth](https://
 
 Gitee 仓库：[https://gitee.com/bianyukun1213/ai-schedule-for-usth](https://gitee.com/bianyukun1213/ai-schedule-for-usth)
 
-> Gitee 仓库仅用于镜像以及帮助文档的国内访问，如需提交 `Issue`、`Pull Request` 等，请使用 GitHub 仓库。
+> Gitee 仓库仅用于镜像 GitHub 仓库以及帮助文档的国内访问，如需提交 `Issue`、`Pull Request` 等，请使用 GitHub 仓库。
 
 ## 帮助文档
 
