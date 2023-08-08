@@ -54,7 +54,7 @@ Gitee 仓库：[https://gitee.com/bianyukun1213/aischedule-for-usth](https://git
 
 - 本方案会持续维护吗？
 
-  会维护至我（2020 级）毕业。后续更新需要有人接力，fork 或提交 pull Request 等。
+  会维护至我（2020 级）毕业。后续更新需要有人接力，fork 或提交 pull request 等。
 
 - 有开发适用于其他品牌手机或 App 的课程表导入方案的计划吗？
 
