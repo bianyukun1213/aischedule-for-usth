@@ -32,16 +32,16 @@ function scheduleHtmlParser(providerData) {
     function parseWeeksStr(weeksStr) {
         console.log('parseWeeksStr 被调用：' + weeksStr);
         const final = [];
-        const weeksSplAry = weeksStr.split(',');
-        for (const item of weeksSplAry) {
+        const weeksSplitArr = weeksStr.split(',');
+        for (const item of weeksSplitArr) {
             const weeksStrTmp = item.replace('第', '').replace('周', '').replace('节', '');
             if (weeksStrTmp.indexOf('-') !== -1) {
-                const weeksStrAry = weeksStrTmp.split('-'); // 以 - 为分隔符。
-                const begin = Number(weeksStrAry[0]);
-                const end = Number(weeksStrAry[1].replace('单周', '').replace('双周', ''));
+                const weeksStrArr = weeksStrTmp.split('-'); // 以 - 为分隔符。
+                const begin = Number(weeksStrArr[0]);
+                const end = Number(weeksStrArr[1].replace('单周', '').replace('双周', ''));
                 if (begin > 0 && end > begin) {
                     for (let i = begin; i <= end; i++) {
-                        if ((weeksStrAry[1].indexOf('单周') !== -1 && i % 2 === 0) || (weeksStrAry[1].indexOf('双周') !== -1 && i % 2 !== 0)) { // 课程单周上但是当前循环在双周或课程双周上但是当前循环在单周
+                        if ((weeksStrArr[1].indexOf('单周') !== -1 && i % 2 === 0) || (weeksStrArr[1].indexOf('双周') !== -1 && i % 2 !== 0)) { // 课程单周上但是当前循环在双周或课程双周上但是当前循环在单周
                             continue;
                         }
                         final.push(i);

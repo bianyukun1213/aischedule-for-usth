@@ -7,7 +7,7 @@ async function scheduleHtmlProvider() {
         await AIScheduleAlert('请定向至“首页>教学资源>教学资源>班级课表”页面。');
         return 'do not continue';
     }
-    const solutionSelect = await AIScheduleSelect({
+    const selectedSolution = await AIScheduleSelect({
         titleText: '选择解析方案',
         contentText: '新学期刚开始时，课程表通常还没有正式发布，你可能找不到新学期的课程表。如果是这种情况，请选择 2 号方案以尝试从接口导入课程表。正常情况请选择 1 号方案。',
         selectList: [
@@ -16,7 +16,7 @@ async function scheduleHtmlProvider() {
             '取消'
         ]
     });
-    if (solutionSelect === '1. 解析页面 HTML') {
+    if (selectedSolution === '1. 解析页面 HTML') {
         /*
             检查 mycoursetable 子节点个数，判断是否可获取课程表
             这个方法不一定可靠，也许 mycoursetable 中没有课程，但在 other-course 里有额外课程
@@ -31,7 +31,7 @@ async function scheduleHtmlProvider() {
         const printDiv = document.getElementById('print_div');
         tmpNode.appendChild(printDiv.cloneNode(true));
         return 'HTML|' + tmpNode.innerHTML;
-    } else if (solutionSelect === '2. 解析接口 JSON') {
+    } else if (selectedSolution === '2. 解析接口 JSON') {
         const classNumEle = document.getElementById('classNum');
         const classIndex = classNumEle.selectedIndex;
         const className = classNumEle.options[classIndex].text;
