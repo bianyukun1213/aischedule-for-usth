@@ -156,15 +156,15 @@ async function scheduleTimer({ providerRes, parserRes } = {}) {
             endTime: '19:55',
         }]
     };
-    let table = '节次\t教学主楼\t科技大厦\n';
+    let table = '节次|教学主楼|科技大厦\n';
     for (let index = 0; index < 10; index++) {
         const aStartTime = sections.versionA[index].startTime;
         const aEndTime = sections.versionA[index].endTime;
         const bStartTime = sections.versionB[index].startTime;
         const bEndTime = sections.versionB[index].endTime;
-        table += `${index + 1}\t${aStartTime}-${aEndTime}\t${bStartTime}-${bEndTime}\n`;
+        table += `${index + 1}|${aStartTime}-${aEndTime}|${bStartTime}-${bEndTime}\n`;
     }
-    const selectedSections = await AIScheduleSelect({
+    const userSelection = await AIScheduleSelect({
         titleText: '选择教学作息时间',
         contentText: `学校的教学作息时间比较灵活，受接口限制无法具体到每节课设置，只能统一设置，选择最接近的即可。\n${table}`,
         selectList: [
@@ -174,7 +174,7 @@ async function scheduleTimer({ providerRes, parserRes } = {}) {
         ]
     });
     let currentSections = {};
-    switch (selectedSections) {
+    switch (userSelection) {
         case '教学主楼':
             currentSections = sections.versionA;
             break;
